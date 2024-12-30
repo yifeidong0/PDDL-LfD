@@ -48,5 +48,5 @@ If this project helps your work, please consider citing our paper with
 }
 ```
 
-## Reference
+## Acknowledge
 This package is developed based on the shared GitHub package [kitchen-worlds](https://github.com/Learning-and-Intelligent-Systems/kitchen-worlds.git) as well as its dependencies.
