@@ -1,0 +1,8 @@
+**/__pycache__/
+libs/pddl-lfd/algorithms/motion_planner/dmp_custom/scripts/__pycache__
+*.pyc
+
+statistics/py3
+temp/*
+
+model_decomposed
