@@ -1,0 +1,3 @@
+[submodule "algorithms/pddlstream"]
+	path = algorithms/pddlstream
+	url = https://github.com/caelan/pddlstream.git
