@@ -271,25 +271,25 @@ if __name__ == "__main__":
 	init_plan = solve_template_tamp_problem(robots_info, tables_info,
 											blocks_info, goal=None)
 
-	"""Solve the multi-goal problem"""
-	info = {
-		"n_itr": 100,
-		"one_time_cost": [],
-		"multi_time_cost": [],
-		"plan_length": [],
-		"plan_cost": [],
-		"evaluations": [],
-	}
-	for i in range(info["n_itr"]):
-		one_cost, multi_cost = solve_multi_goal_tamp_problem(robots_info, 
-				tables_info, blocks_info, init_plan=init_plan, skills=skills)
-		info["one_time_cost"].append(one_cost)
-		info["multi_time_cost"].append(multi_cost)
+	# """Solve the multi-goal problem"""
+	# info = {
+	# 	"n_itr": 100,
+	# 	"one_time_cost": [],
+	# 	"multi_time_cost": [],
+	# 	"plan_length": [],
+	# 	"plan_cost": [],
+	# 	"evaluations": [],
+	# }
+	# for i in range(info["n_itr"]):
+	# 	one_cost, multi_cost = solve_multi_goal_tamp_problem(robots_info, 
+	# 			tables_info, blocks_info, init_plan=init_plan, skills=skills)
+	# 	info["one_time_cost"].append(one_cost)
+	# 	info["multi_time_cost"].append(multi_cost)
 
-	print(f"Average time cost for solving the multi-goal problem: {np.mean(info['multi_time_cost']):.3f} s \
-		with std: {np.std(info['multi_time_cost']):.6f} s")
-	print(f"Average time cost for solving the one-goal problem: {np.mean(info['one_time_cost']):.3f} s \
-		with std: {np.std(info['one_time_cost']):.6f} s")   
+	# print(f"Average time cost for solving the multi-goal problem: {np.mean(info['multi_time_cost']):.3f} s \
+	# 	with std: {np.std(info['multi_time_cost']):.6f} s")
+	# print(f"Average time cost for solving the one-goal problem: {np.mean(info['one_time_cost']):.3f} s \
+	# 	with std: {np.std(info['one_time_cost']):.6f} s")   
 
 	# folder_path = absjoin(STATIC_PATH,"time_costs", 
 	# 				   "logic_dmp", "block_stacking")

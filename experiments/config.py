@@ -8,6 +8,8 @@
 import os
 import sys
 from os.path import join, abspath, dirname
+import os.path as osp
+sys.path.insert(0, osp.join(osp.dirname(osp.abspath(__file__)), '../../../../'))
 
 def absjoin(*args):
     return abspath(join(*args))
@@ -47,3 +49,8 @@ SMALL_BLOCK_URDF = absjoin(MODEL_PATH, 'objects/block_for_pick_and_place.urdf')
 MIDLLE_BLOCK_URDF = absjoin(MODEL_PATH, 'objects/block_for_pick_and_place_mid_size.urdf')
 SINK_URDF = absjoin(MODEL_PATH, 'objects/sink.urdf')
 STOVE_URDF = absjoin(MODEL_PATH, 'objects/stove.urdf')
+
+SCISSORS_URDF = absjoin(MODEL_PATH, 'hook_task/scissors/scissors.urdf')
+TAPE_URDF = absjoin(MODEL_PATH, 'hook_task/tape/tape.urdf')
+HOOK_COAT_URDF = absjoin(MODEL_PATH, 'hook_task/hook/hook1.urdf')
+HOOK_SLATWALL_URDF = absjoin(MODEL_PATH, 'hook_task/slatwall-hook/slatwall_hook.urdf')

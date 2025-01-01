@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot name="donut">
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://tape/tape.stl" scale="2 2 2"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://tape/tape_vhacd.obj" scale="2 2 2" />
+      </geometry>
+    </collision>
+  </link>
+
+</robot>
+

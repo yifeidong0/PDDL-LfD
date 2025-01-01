@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot name="donut">
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://scissors/scissors.stl" scale="0.004 0.004 0.004"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://scissors/scissors_vhacd.obj" scale="0.004 0.004 0.004" />
+      </geometry>
+    </collision>
+  </link>
+
+</robot>
+

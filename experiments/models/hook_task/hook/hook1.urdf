@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot name="hook">
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://hook/hook1.obj" scale="0.1 0.1 0.1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://hook/hook1.obj" scale="0.1 0.1 0.1" />
+      </geometry>
+    </collision>
+  </link>
+
+</robot>
+
