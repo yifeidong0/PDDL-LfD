@@ -64,9 +64,9 @@ class HookWorld():
 		init_hook_states = []
 		with HideOutput():
 			for name, hook_info in hooks_info.items():
-				print("@@@@@@@@",hook_info["urdf"])
-				hook_id = load_model(hook_info["urdf"], 
-								fixed_base=True)
+				hook_id = load_model(hook_info["urdf"],
+							pose=hook_info["pose"],
+							fixed_base=True)
 				hook_info["id"] = hook_id
 				init_hook_states += [("hook", hook_id),]
 		return init_hook_states

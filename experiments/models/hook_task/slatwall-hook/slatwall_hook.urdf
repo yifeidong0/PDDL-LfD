@@ -3,13 +3,15 @@
 
   <link name="base_link">
     <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://hook/slatwall_vhacd.obj" scale="0.1 0.1 0.1"/>
+        <mesh filename="package://slatwall-hook/slatwall.stl" scale="0.002 0.002 0.002"/>
       </geometry>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://hook/slatwall_vhacd.obj" scale="0.1 0.1 0.1" />
+        <mesh filename="package://slatwall-hook/slatwall_vhacd.obj" scale="0.002 0.002 0.002" />
       </geometry>
     </collision>
   </link>

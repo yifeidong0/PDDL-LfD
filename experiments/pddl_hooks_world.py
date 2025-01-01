@@ -14,6 +14,7 @@ import time
 import pickle
 import numpy as np
 from config import *
+import pybullet as p
 from pddlstream.algorithms.meta import solve
 from pddlstream.language.constants import print_solution, PDDLProblem
 from pddlstream.language.generator import from_gen_fn
@@ -65,14 +66,18 @@ def solve_template_tamp_problem(robots_info, tables_info,
 	with HideOutput():
 		env = HookWorld(use_gui=USE_GUI)
 		init_table_states = env.load_table(tables_info)
-		init_hook_states = env.load_hooks(hooks_info)
 		init_robot_states = env.load_robot(robots_info)
 		init_block_states = env.template_load_objects(target_objects_info)
-		init = init_robot_states + init_table_states + init_block_states
+		init_hook_states = env.load_hooks(hooks_info) # must be after loading objects and others
+		init = init_robot_states + init_table_states + init_block_states + init_hook_states
 
 	statics, fluents = env.get_logical_state(robots_info=robots_info,
 										  tables_info=tables_info,
 										  target_objects_info=target_objects_info)
+	print("Initial logical state")
+	print("############Initial state: ", init)
+	print("############statics: ", statics)
+	print("############fluents: ", fluents)
 	init += statics + fluents
 	problem = pddlstream_from_problem(robots_info, tables_info, 
 										target_objects_info, init, goal=goal)
@@ -90,6 +95,7 @@ def solve_template_tamp_problem(robots_info, tables_info,
 	print(f"\n Time cost for solving the template problem: {cost_t:.3f} s")
 
 	plan, _, _ = solution
+	print("############Plan: ", plan)
 	if plan is None:
 		env.disconnect()
 
@@ -126,7 +132,8 @@ if __name__ == "__main__":
 
 	# set hooks info
 	hooks_info = {}
-
+	hooks_info["hook-coat"] = {"urdf": HOOK_COAT_URDF, "pose": ([0.2, 0.5, 0.5], p.getQuaternionFromEuler([1.57, 0, 0]))}
+	hooks_info["hook-slatwall"] = {"urdf": HOOK_SLATWALL_URDF, "pose": ([0.5, 0.5, 0.5], p.getQuaternionFromEuler([1.57, 0, 0]))}
 
 	init_plan = solve_template_tamp_problem(robots_info, tables_info,
 											target_objects_info, hooks_info, goal=None)
