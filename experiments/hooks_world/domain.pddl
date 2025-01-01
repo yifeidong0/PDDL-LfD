@@ -15,7 +15,7 @@
     (arm ?arm)
     (block ?block)
     (table ?table)
-    (hook ?hook)
+    (hook ?hook) ; assume hook is fixed
     ; find-table-place and find-block-place
     (worldpose ?block ?X_WB)
     ; find-grasp
@@ -24,6 +24,8 @@
     (table-support ?block ?X_WB ?table)
     ; find-block-place
     (block-support ?upperblock ?X_WU ?lowerblock ?X_WL)
+    ; find-hook-place
+    (hook-support ?block ?X_WB ?hook)
 
     ; fluents 
     (empty ?arm)
@@ -34,7 +36,35 @@
     (clear ?block)
     (on-table ?block ?table)
     (on-block ?block1 ?block2)
+    (available ?hook)
 
+)
+
+(:action place-hook ; place tape on hook-slatwall
+    :parameters (?arm ?block ?table ?hook ?X_WB ?X_HB) 
+    :precondition (and
+        (arm ?arm)
+        (block ?block)
+        (table ?table)
+        (hook ?hook)
+        (handpose ?block ?X_HB)
+        (worldpose ?block ?X_WB)
+
+        (inhand ?arm ?block)
+        (not (empty ?arm))
+        (athandpose ?arm ?block ?X_HB)
+        (hook-support ?block ?X_WB ?hook)
+        ; (table-support ?block ?X_WB ?table)
+        (available ?hook)
+    ) 
+    :effect (and
+        (not (athandpose ?arm ?block ?X_HB))
+        (atpose ?block ?X_WB) 
+        (empty ?arm)
+        (not (inhand ?arm ?block))
+        (on-table ?block ?table)
+        (not (available ?hook))
+    )
 )
 
 (:action pick  ;off of a table
@@ -61,12 +91,11 @@
 )
 
 (:action place ; place block on table
-    :parameters (?arm ?block ?table ?hook ?X_WB ?X_HB) 
+    :parameters (?arm ?block ?table ?X_WB ?X_HB) 
     :precondition (and
         (arm ?arm)
         (block ?block)
         (table ?table)
-        (hook ?hook)
         (handpose ?block ?X_HB)
         (worldpose ?block ?X_WB)
 

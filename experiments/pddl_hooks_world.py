@@ -24,7 +24,7 @@ from examples.pybullet.utils.pybullet_tools.utils import \
     LockRenderer, HideOutput
 
 from experiments.hooks_world.primitives import \
-    get_grasp_gen, get_stable_gen, get_stack_gen
+    get_grasp_gen, get_stable_gen, get_stack_gen, get_hook_place_gen
 
 from experiments.hooks_world.env_hook_tools import HookWorld
 
@@ -46,6 +46,7 @@ def pddlstream_from_problem(robots_info, tables_info, target_objects_info,
 
 	table_id = table_ids[0]
 	if goal is None:
+		# TODO: set the goal of TAMP problem here
 		goal = ("and", *[("on-block", i, i + 1) for i in range(start_id, num_target_objects + 1)],
 						("on-table", num_target_objects + 1, table_id),)
 		# print("Template problem goal: ", goal)
@@ -54,6 +55,7 @@ def pddlstream_from_problem(robots_info, tables_info, target_objects_info,
 		"find-grasp": from_gen_fn(get_grasp_gen(robot_ids[0])),
 		"find-table-place": from_gen_fn(get_stable_gen(fixed=table_ids)),
 		"find-block-place": from_gen_fn(get_stack_gen()),
+		"find-hook-place": from_gen_fn(get_hook_place_gen()),
 	}
 
 	return PDDLProblem(domain_pddl, constant_map, stream_pddl, stream_map, init, goal)

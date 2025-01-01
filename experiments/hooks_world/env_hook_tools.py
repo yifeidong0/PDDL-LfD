@@ -68,7 +68,7 @@ class HookWorld():
 							pose=hook_info["pose"],
 							fixed_base=True)
 				hook_info["id"] = hook_id
-				init_hook_states += [("hook", hook_id),]
+				init_hook_states += [("hook", hook_id),("available", hook_id),]
 		return init_hook_states
 	
 	def load_table(self, tables_info):
@@ -365,8 +365,11 @@ class HookWorld():
 		for name, args in plan:
 			robot_id, obj_id = args[:2]
 			obj_pos = args[3].value[0]
+			print("!!!!!!!!!!!!args[3].value", args[3].value)
+			print("!!!!!!!!!!!!obj_pos", obj_pos)
 			target_pos = np.asarray(deepcopy(obj_pos))
 			target_pos[2] += GRASP_DIST
+			print("!!!!!!!!!!!!target_pos", target_pos)
 			if name in ['pick', 'unstack']:
 				self.state_reach(robot_id, target_pos, 
 									tool=obj_id, attach=False)

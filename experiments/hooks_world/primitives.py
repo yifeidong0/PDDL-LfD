@@ -254,7 +254,7 @@ def get_top_grasps(body, under=False, tool_pose=TOOL_POSE, body_pose=unit_pose()
                                 reflect_z, translate_center, body_pose)]
     return grasps
 
-def get_grasp_gen(robot, grasp_name='top', verbose=False):
+def get_grasp_gen(robot, grasp_name='top', verbose=1):
     if verbose:
         print(colored('\n Running get_grasp_gen function \n', 'red'))
     grasp_info = GRASP_INFO[grasp_name]
@@ -270,7 +270,7 @@ def get_grasp_gen(robot, grasp_name='top', verbose=False):
     return gen
 
 
-def get_stable_gen(fixed=[], verbose=False, reach_range=(0.25, 0.5),
+def get_stable_gen(fixed=[], verbose=1, reach_range=(0.25, 0.5),
                    reach_theta=(-np.pi*0.3, np.pi*0.3)):
     if verbose:
         print(colored('\n Running get_stable_gen function \n', 'red'))
@@ -285,13 +285,12 @@ def get_stable_gen(fixed=[], verbose=False, reach_range=(0.25, 0.5),
             yield (body_pose,)
     return gen
 
-
-def get_stack_gen(verbose=False):
+def get_stack_gen(verbose=1):
     if verbose:
         print(colored('\n Running get_stack_gen function \n', 'red'))
     def gen(body1, body2, pose, verbose=verbose):
         point = Point(x=pose.value[0][0], y=pose.value[0][1], 
-              z=pose.value[0][2] + 0.06)
+              z=pose.value[0][2] + 0.06) # TODO: height of the placement position
         roll, pitch, yaw = euler_from_quat(pose.value[1])
         euler = Euler(roll=roll, pitch=pitch, yaw=yaw)
         # set_pose(body1, Pose(point=point, euler=euler))
@@ -303,6 +302,22 @@ def get_stack_gen(verbose=False):
         yield (body_pose,)
     return gen
 
+def get_hook_place_gen(verbose=1):
+    if verbose:
+        print(colored('\n Running get_hook_place_gen function \n', 'red'))
+    def gen(body1, body2, pose, verbose=verbose):
+        point = Point(x=pose.value[0][0], y=pose.value[0][1], 
+              z=pose.value[0][2] + 0.06) # TODO: height of the placement position
+        roll, pitch, yaw = euler_from_quat(pose.value[1])
+        euler = Euler(roll=roll, pitch=pitch, yaw=yaw)
+        # set_pose(body1, Pose(point=point, euler=euler))
+        body_pose = BodyPose(body1, 
+                             Pose(point=point, euler=euler))
+        # set_pose(body1, body_pose.value)
+        if verbose:
+            print(colored(f'\n Stack Pose {body_pose.value} \n', 'green'))
+        yield (body_pose,)
+    return gen
 ##################################################
 
 def assign_fluent_state(fluents):

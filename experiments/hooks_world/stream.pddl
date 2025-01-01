@@ -5,7 +5,7 @@
 ; Contributor: Yan Zhang <yan.zhang@idiap.ch>
 ; -----------------------------------------------------------------------------
 
-(define (stream blocks_world)
+(define (stream hooks_world)
 
   (:stream find-grasp
       :inputs (?block)
@@ -15,6 +15,20 @@
       :outputs (?X_HB)
       :certified (and
           (handpose ?block ?X_HB)
+      )
+  )
+
+ (:stream find-hook-place
+      :inputs (?block ?hook ?X_WL) 
+      :domain (and
+          (block ?block) 
+          (hook ?hook) 
+          (worldpose ?hook ?X_WL)
+      )
+      :outputs (?X_WB)
+      :certified (and
+          (worldpose ?block ?X_WB)
+          (hook-support ?block ?X_WB ?hook)
       )
   )
 
