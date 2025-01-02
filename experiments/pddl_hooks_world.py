@@ -28,7 +28,7 @@ from experiments.hooks_world.primitives import \
 
 from experiments.hooks_world.env_hook_tools import HookWorld
 
-def pddlstream_from_problem(robots_info, tables_info, target_objects_info,
+def pddlstream_from_problem(robots_info, tables_info, target_objects_info, hooks_info,
                             init, goal=None):
     
 	domain_path = absjoin(EXP_PATH, 'hooks_world/domain.pddl')
@@ -40,6 +40,9 @@ def pddlstream_from_problem(robots_info, tables_info, target_objects_info,
 	robot_ids = [robot_info["id"] for name, robot_info in robots_info.items()]
 	table_ids = [table_info["id"] for name, table_info in tables_info.items()]
 	block_ids = [block_info["id"] for name, block_info in target_objects_info.items()]
+	hook_ids = [hook_info["id"] for name, hook_info in hooks_info.items()]
+	print("@@@@@@block_ids: ", block_ids)
+	print("@@@@@@hook_ids: ", hook_ids)
 	start_id = min(block_ids)
 	end_id = max(block_ids)
 	num_target_objects = len(block_ids)
@@ -47,8 +50,11 @@ def pddlstream_from_problem(robots_info, tables_info, target_objects_info,
 	table_id = table_ids[0]
 	if goal is None:
 		# TODO: set the goal of TAMP problem here
-		goal = ("and", *[("on-block", i, i + 1) for i in range(start_id, num_target_objects + 1)],
-						("on-table", num_target_objects + 1, table_id),)
+		# goal = ("and", *[("on-block", i, i + 1) for i in range(start_id, num_target_objects + 1)],
+		# 				("on-table", num_target_objects + 1, table_id),)
+		goal = ("and", ("on-hook", block_ids[0], hook_ids[0]), ("on-hook", block_ids[1], hook_ids[1]),)
+		# goal = ("and", ("on-hook", block_ids[0], hook_ids[0]),)
+		print("@@@@@@goal: ", goal)
 		# print("Template problem goal: ", goal)
 
 	stream_map = {
@@ -75,14 +81,15 @@ def solve_template_tamp_problem(robots_info, tables_info,
 
 	statics, fluents = env.get_logical_state(robots_info=robots_info,
 										  tables_info=tables_info,
-										  target_objects_info=target_objects_info)
+										  target_objects_info=target_objects_info,
+										  hooks_info=hooks_info)
 	print("Initial logical state")
 	print("############Initial state: ", init)
 	print("############statics: ", statics)
 	print("############fluents: ", fluents)
 	init += statics + fluents
 	problem = pddlstream_from_problem(robots_info, tables_info, 
-										target_objects_info, init, goal=goal)
+								   target_objects_info, hooks_info, init, goal=goal)
 	if VERBOSE:
 		print("Template problem init: ", problem.init)
 		print("Template problem goal: ", problem.goal)
@@ -114,7 +121,7 @@ def solve_template_tamp_problem(robots_info, tables_info,
  
 if __name__ == "__main__":
 	"""Generate the action plan for template problem"""
-	DEBUG = False; VERBOSE = False # By default, not log info
+	DEBUG = 1; VERBOSE = 1 # By default, not log info
 	USE_GUI = True; np.random.seed(0)
 
 	# set robots info 
@@ -134,8 +141,8 @@ if __name__ == "__main__":
 
 	# set hooks info
 	hooks_info = {}
-	hooks_info["hook-coat"] = {"urdf": HOOK_COAT_URDF, "pose": ([0.2, 0.5, 0.5], p.getQuaternionFromEuler([1.57, 0, 0]))}
-	hooks_info["hook-slatwall"] = {"urdf": HOOK_SLATWALL_URDF, "pose": ([0.5, 0.5, 0.5], p.getQuaternionFromEuler([1.57, 0, 0]))}
+	hooks_info["hook-coat"] = {"urdf": HOOK_COAT_URDF, "pose": ([0.2, 0.4, 0.4], p.getQuaternionFromEuler([1.57, 0, 0]))}
+	hooks_info["hook-slatwall"] = {"urdf": HOOK_SLATWALL_URDF, "pose": ([0.4, 0.4, 0.4], p.getQuaternionFromEuler([1.57, 0, 0]))}
 
 	init_plan = solve_template_tamp_problem(robots_info, tables_info,
 											target_objects_info, hooks_info, goal=None)

@@ -148,7 +148,7 @@ class HookWorld():
 	
 		return init_obj_states
 
-	def get_logical_state(self, robots_info, tables_info, target_objects_info):
+	def get_logical_state(self, robots_info, tables_info, target_objects_info, hooks_info):
 		"""This function generates the logical states of current scene
 		"""
 		statics, fluents = [], []
@@ -193,6 +193,12 @@ class HookWorld():
 			fluents += [("clear", int(stack[-1][0])),]
 		# fluents contains the logical states for state comparison
 		
+		# Define the states for hooks
+		for name, hook_info in hooks_info.items():
+			hook_id = hook_info["id"]
+			hook_pose = hook_info["pose"]
+			hook_pose = BodyPose(hook_id, Pose(np.array(hook_pose[0])))
+			statics += [("hookatpose", hook_id, hook_pose), ("worldhookpose", hook_id, hook_pose),]
 		return statics, fluents
 
 	def make_random_stacking(self, target_objects, max_stack_num=None, 
@@ -374,7 +380,7 @@ class HookWorld():
 				self.state_reach(robot_id, target_pos, 
 									tool=obj_id, attach=False)
 				self.grasp(robot_id, obj_id, obj_pos)
-			elif name in ['place', 'stack']:
+			elif name in ['place', 'stack', 'hook']:
 				self.state_reach(robot_id, target_pos, 
 									tool=obj_id, attach=True)
 				self.ungrasp(robot_id, obj_id, obj_pos)
@@ -382,6 +388,7 @@ class HookWorld():
 				raise NotImplementedError(name)
 	
 	def step_task_plan(self, action, skills):
+		# TODO: implement the step_task_plan function for hook action
 		name, args = action.name, action.args
 		robot_id, obj_id = args[:2]
 		if name == 'place':
@@ -392,6 +399,8 @@ class HookWorld():
 			obj_pos[2] += BLOCK_DIMS[2]
 		elif name in ['pick', 'unstack']:
 			obj_pos = get_point(obj_id)
+		elif name == 'hook':
+			obj_pos = args[2].value[0]
 		else:
 			raise NotImplementedError(name)
 		target_pos = np.asarray(deepcopy(obj_pos))

@@ -19,16 +19,16 @@
   )
 
  (:stream find-hook-place
-      :inputs (?block ?hook ?X_WL) 
+      :inputs (?block ?hook ?X_WK) 
       :domain (and
-          (block ?block) 
-          (hook ?hook) 
-          (worldpose ?hook ?X_WL)
+          (block ?block)
+          (hook ?hook)
+          (worldhookpose ?hook ?X_WK)
       )
       :outputs (?X_WB)
       :certified (and
           (worldpose ?block ?X_WB)
-          (hook-support ?block ?X_WB ?hook)
+          (hook-support ?block ?X_WB ?hook ?X_WK)
       )
   )
 
