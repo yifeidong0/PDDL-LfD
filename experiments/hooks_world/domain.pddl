@@ -89,7 +89,7 @@
     )
 )
 
-(:action hook ; place tape on hook-slatwall
+(:action hook ; place tools on hooks
     :parameters (?arm ?block ?hook ?X_WB ?X_HB ?X_WK) 
     :precondition (and
         (arm ?arm)

@@ -53,8 +53,6 @@ def pddlstream_from_problem(robots_info, tables_info, target_objects_info, hooks
 		# goal = ("and", *[("on-block", i, i + 1) for i in range(start_id, num_target_objects + 1)],
 		# 				("on-table", num_target_objects + 1, table_id),)
 		goal = ("and", ("on-hook", block_ids[0], hook_ids[0]), ("on-hook", block_ids[1], hook_ids[1]),)
-		# goal = ("and", ("on-hook", block_ids[0], hook_ids[0]),)
-		print("@@@@@@goal: ", goal)
 		# print("Template problem goal: ", goal)
 
 	stream_map = {
@@ -105,6 +103,7 @@ def solve_template_tamp_problem(robots_info, tables_info,
 
 	plan, _, _ = solution
 	print("############Plan: ", plan)
+	print("############Plan: ", plan[1].args[3].value)
 	if plan is None:
 		env.disconnect()
 
@@ -114,6 +113,8 @@ def solve_template_tamp_problem(robots_info, tables_info,
 		env.reset(robots_info=robots_info, target_objects_info=target_objects_info)
 		env.postprocess_plan(plan)
 		time.sleep(1)
+		
+		# let pybullet run for 3 secs
 	env.disconnect()
 
 	return plan

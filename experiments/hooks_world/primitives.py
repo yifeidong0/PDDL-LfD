@@ -289,10 +289,6 @@ def get_stack_gen(verbose=1):
     if verbose:
         print(colored('\n Running get_stack_gen function \n', 'red'))
     def gen(body1, body2, pose, verbose=verbose):
-        print("@@@@@@in get_stack_gen: ")
-        print("@@@@@@body1: ", body1)
-        print("@@@@@@body2: ", body2)
-        print("@@@@@@pose: ", pose)
         point = Point(x=pose.value[0][0], y=pose.value[0][1], 
               z=pose.value[0][2] + 0.06) # TODO: height of the placement position
         roll, pitch, yaw = euler_from_quat(pose.value[1])
@@ -312,7 +308,8 @@ def get_hook_place_gen(verbose=1):
     def gen(body1, body2, pose, verbose=verbose):
         point = Point(x=pose.value[0][0], y=pose.value[0][1]-0.1, 
               z=pose.value[0][2]) # TODO: height of the placement position
-        roll, pitch, yaw = euler_from_quat(pose.value[1])
+        # roll, pitch, yaw = euler_from_quat(pose.value[1])
+        roll, pitch, yaw = 1.5, 1.5, 1
         euler = Euler(roll=roll, pitch=pitch, yaw=yaw)
         # set_pose(body1, Pose(point=point, euler=euler))
         body_pose = BodyPose(body1, 
@@ -320,6 +317,7 @@ def get_hook_place_gen(verbose=1):
         # set_pose(body1, body_pose.value)
         if verbose:
             print(colored(f'\n Stack Pose {body_pose.value} \n', 'green'))
+        print("@@@@@@@@@in get_hook_place_gen: ", body_pose.value[0], body_pose.value[1])
         yield (body_pose,)
     return gen
 ##################################################

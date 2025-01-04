@@ -23,6 +23,7 @@ from examples.pybullet.utils.pybullet_tools.utils import \
 from experiments.poisson_disc_sampling import PoissonSampler, GridSampler
 from experiments.hooks_world.primitives import BodyPose, BodyConf, \
     get_tool_link
+from scipy.spatial.transform import Rotation as Rot
 
 
 TABLE_HEIGHT = 0.001
@@ -455,13 +456,25 @@ class HookWorld():
 	
 	def state_reach(self, robot_id, target_pos, 
 					object=None, tool=None, attach=False):
+		# TODO: add target orientation
 		tool_link = get_tool_link(robot_id)
 		Kp = 3 / 2
 		Kd = np.sqrt(2*Kp) / 2 
 		dt = 0.02
 		eef_pos_list = []
-		panda_pos, target_quat = get_link_pose(robot_id, tool_link)
-		for _ in range(1000):
+		panda_pos, init_quat = get_link_pose(robot_id, tool_link)
+
+		from scipy.spatial.transform import Slerp
+		# print("!!!!!!!!!!!!init_quat", init_quat)
+		target_quat = p.getQuaternionFromEuler([1.57, 0, 0])
+		init_rotation = Rot.from_quat(init_quat)
+		target_rotation = Rot.from_quat(target_quat)
+		key_times = [0, 1]  # Corresponding to start and end of the interpolation
+		key_rotations = Rot.concatenate([init_rotation, target_rotation])
+		slerp = Slerp(key_times, key_rotations)
+
+		num_steps = 1000  # total number of interpolation steps
+		for step in range(num_steps):
 			# Calculate a distance to move
 			dx = target_pos[0] - panda_pos[0]   # x distance to move
 			dy = target_pos[1] - panda_pos[1]   # y distance to move
@@ -479,10 +492,15 @@ class HookWorld():
 			new_panda_pos = [panda_pos[0] + dx,
 						panda_pos[1] + dy,
 						panda_pos[2] + dz]
+			
+			# TODO: interpolate between init_quat and target_quat
+			# t = step / (num_steps - 1)  # interpolation factor (0 to 1)
+			# interp_quat = slerp(t).as_quat()
+
 			conf = p.calculateInverseKinematics(robot_id,
 												tool_link,
 												new_panda_pos,
-												target_quat)
+												init_quat)
 			self.set_joint_positions(robot_id, conf)
 			panda_pos, _ = get_link_pose(robot_id, tool_link)
 			if attach:
