@@ -3,13 +3,15 @@
 
   <link name="base_link">
     <visual>
+      <origin xyz="0 0 0" rpy="0 0 3.14" />
       <geometry>
-        <mesh filename="package://scissors/scissors.stl" scale="0.002 0.002 0.002"/>
+        <mesh filename="package://scissors/scissors.stl" scale="0.0015 0.0015 0.0015"/>
       </geometry>
     </visual>
     <collision>
+      <origin xyz="0 0 0" rpy="0 0 3.14" />
       <geometry>
-        <mesh filename="package://scissors/scissors_vhacd.obj" scale="0.002 0.002 0.002" />
+        <mesh filename="package://scissors/scissors_vhacd.obj" scale="0.0015 0.0015 0.0015" />
       </geometry>
     </collision>
   </link>

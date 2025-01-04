@@ -261,6 +261,7 @@ def get_grasp_gen(robot, grasp_name='top', verbose=1):
     tool_link = get_tool_link(robot)
     def gen(body, verbose=verbose):
         grasp_poses = grasp_info.get_grasps(body)
+        print("@@@@@@@@@@@Grasp poses: ", grasp_poses) # TODO: modify grasp pose from get_top_grasps
         # TODO: continuous set of grasps
         for grasp_pose in grasp_poses:
             body_grasp = BodyGrasp(body, grasp_pose, grasp_info.approach_pose, robot, tool_link)
@@ -290,7 +291,7 @@ def get_stack_gen(verbose=1):
         print(colored('\n Running get_stack_gen function \n', 'red'))
     def gen(body1, body2, pose, verbose=verbose):
         point = Point(x=pose.value[0][0], y=pose.value[0][1], 
-              z=pose.value[0][2] + 0.06) # TODO: height of the placement position
+              z=pose.value[0][2] + 0.06)
         roll, pitch, yaw = euler_from_quat(pose.value[1])
         euler = Euler(roll=roll, pitch=pitch, yaw=yaw)
         # set_pose(body1, Pose(point=point, euler=euler))
@@ -302,14 +303,32 @@ def get_stack_gen(verbose=1):
         yield (body_pose,)
     return gen
 
-def get_hook_place_gen(verbose=1):
+def get_hook_place_gen(target_objects_info, hook_info, verbose=1):
     if verbose:
         print(colored('\n Running get_hook_place_gen function \n', 'red'))
-    def gen(body1, body2, pose, verbose=verbose):
-        point = Point(x=pose.value[0][0], y=pose.value[0][1]-0.1, 
-              z=pose.value[0][2]) # TODO: height of the placement position
-        # roll, pitch, yaw = euler_from_quat(pose.value[1])
-        roll, pitch, yaw = 1.5, 1.5, 1
+    def gen(body1, body2, pose, hook_info=hook_info, verbose=verbose):
+        """pose: (point, quaternion), it refers to the hook pose defined in 'hooks_info' (?X_WK in stream.pddl)."""
+        # Get the target object name and hook name
+        target_objects_ids = [block_info["id"] for name, block_info in target_objects_info.items()]
+        target_objects_names = [name for name, block_info in target_objects_info.items()]
+        hook_ids = [hook_info["id"] for name, hook_info in hook_info.items()]
+        hook_names = [name for name, hook_info in hook_info.items()]
+        target_object_index = target_objects_ids.index(body1)
+        target_object_name = target_objects_names[target_object_index]
+        hook_index = hook_ids.index(body2)
+        hook_name = hook_names[hook_index]
+
+        # Set the offset for the target object from the hook position
+        if target_object_name == "scissors" and hook_name == "hook-slatwall":
+            offset = [0, -0.25, 0.05] # offset scissors from hook-slatwall
+        elif target_object_name == "tape" and hook_name == "hook-coat":
+            offset = [0, -0.06, 0.1] # offset tape from hook-coat
+
+        # Set the pose for the target object
+        point = Point(x=pose.value[0][0]+offset[0], y=pose.value[0][1]+offset[1], 
+              z=pose.value[0][2]+offset[2]) # TODO: learn the hook-place pose (offset from hook pose)
+        roll, pitch, yaw = euler_from_quat(pose.value[1]) # TODO: this is not passed. tune def postprocess_plan() and state_reach()
+        # roll, pitch, yaw = 1.5, 1.5, 1
         euler = Euler(roll=roll, pitch=pitch, yaw=yaw)
         # set_pose(body1, Pose(point=point, euler=euler))
         body_pose = BodyPose(body1, 
@@ -317,9 +336,9 @@ def get_hook_place_gen(verbose=1):
         # set_pose(body1, body_pose.value)
         if verbose:
             print(colored(f'\n Stack Pose {body_pose.value} \n', 'green'))
-        print("@@@@@@@@@in get_hook_place_gen: ", body_pose.value[0], body_pose.value[1])
         yield (body_pose,)
     return gen
+
 ##################################################
 
 def assign_fluent_state(fluents):

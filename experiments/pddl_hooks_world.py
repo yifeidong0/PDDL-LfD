@@ -21,7 +21,7 @@ from pddlstream.language.generator import from_gen_fn
 from pddlstream.utils import read, INF
 
 from examples.pybullet.utils.pybullet_tools.utils import \
-    LockRenderer, HideOutput
+    LockRenderer, HideOutput, simulate_for_sim_duration
 
 from experiments.hooks_world.primitives import \
     get_grasp_gen, get_stable_gen, get_stack_gen, get_hook_place_gen
@@ -41,8 +41,6 @@ def pddlstream_from_problem(robots_info, tables_info, target_objects_info, hooks
 	table_ids = [table_info["id"] for name, table_info in tables_info.items()]
 	block_ids = [block_info["id"] for name, block_info in target_objects_info.items()]
 	hook_ids = [hook_info["id"] for name, hook_info in hooks_info.items()]
-	print("@@@@@@block_ids: ", block_ids)
-	print("@@@@@@hook_ids: ", hook_ids)
 	start_id = min(block_ids)
 	end_id = max(block_ids)
 	num_target_objects = len(block_ids)
@@ -59,7 +57,7 @@ def pddlstream_from_problem(robots_info, tables_info, target_objects_info, hooks
 		"find-grasp": from_gen_fn(get_grasp_gen(robot_ids[0])),
 		"find-table-place": from_gen_fn(get_stable_gen(fixed=table_ids)),
 		"find-block-place": from_gen_fn(get_stack_gen()),
-		"find-hook-place": from_gen_fn(get_hook_place_gen()),
+		"find-hook-place": from_gen_fn(get_hook_place_gen(target_objects_info, hooks_info)),
 	}
 
 	return PDDLProblem(domain_pddl, constant_map, stream_pddl, stream_map, init, goal)
@@ -103,7 +101,6 @@ def solve_template_tamp_problem(robots_info, tables_info,
 
 	plan, _, _ = solution
 	print("############Plan: ", plan)
-	print("############Plan: ", plan[1].args[3].value)
 	if plan is None:
 		env.disconnect()
 
@@ -113,8 +110,6 @@ def solve_template_tamp_problem(robots_info, tables_info,
 		env.reset(robots_info=robots_info, target_objects_info=target_objects_info)
 		env.postprocess_plan(plan)
 		time.sleep(1)
-		
-		# let pybullet run for 3 secs
 	env.disconnect()
 
 	return plan

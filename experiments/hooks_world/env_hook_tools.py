@@ -18,7 +18,7 @@ from examples.pybullet.utils.pybullet_tools.utils import \
     set_pose, set_point, Pose, Point, disconnect, HideOutput,\
     set_joint_positions, get_movable_joints, get_link_pose, \
     wait_for_duration, get_point, connect, set_default_camera, \
-    load_model, draw_global_system, enable_gravity
+    load_model, draw_global_system, enable_gravity, simulate_for_sim_duration
 
 from experiments.poisson_disc_sampling import PoissonSampler, GridSampler
 from experiments.hooks_world.primitives import BodyPose, BodyConf, \
@@ -29,6 +29,8 @@ from scipy.spatial.transform import Rotation as Rot
 TABLE_HEIGHT = 0.001
 BLOCK_DIMS = np.array([0.06, 0.06, 0.06])
 BLOCK_HIGHTS = [0.031, 0.091, 0.151, 0.211, 0.271]
+TAPE_HEIGHT = 0.1
+SCISSORS_HEIGHT = 0.01
 R = max(BLOCK_DIMS[:2]) * np.sqrt(2)
 EXTENT = np.array([0.3, 1])
 CENTER = np.array([0.25, -0.5])
@@ -135,17 +137,17 @@ class HookWorld():
 			init_obj_states += [("block", block_pose.body),]
 			
 			# The following target_objects are stacked on the first one
-			for block in stack[1:]:
-				point[2] += BLOCK_DIMS[2] 
-				target_objects_info[block]["pose"] = point.copy()
-				block_pose = BodyPose(target_objects_info[block]["id"], 
-								Pose(Point(x=target_objects_info[block]["pose"][0],
-											y=target_objects_info[block]["pose"][1],
-											z=target_objects_info[block]["pose"][2]
-											)))
-				set_pose(block_pose.body, block_pose.pose)
+			# for block in stack[1:]:
+			# 	point[2] += BLOCK_DIMS[2] 
+			# 	target_objects_info[block]["pose"] = point.copy()
+			# 	block_pose = BodyPose(target_objects_info[block]["id"], 
+			# 					Pose(Point(x=target_objects_info[block]["pose"][0],
+			# 								y=target_objects_info[block]["pose"][1],
+			# 								z=target_objects_info[block]["pose"][2]
+			# 								)))
+			# 	set_pose(block_pose.body, block_pose.pose)
 				
-				init_obj_states += [("block", block_pose.body),]
+			# 	init_obj_states += [("block", block_pose.body),]
 	
 		return init_obj_states
 
@@ -372,6 +374,7 @@ class HookWorld():
 		for name, args in plan:
 			robot_id, obj_id = args[:2]
 			obj_pos = args[3].value[0]
+			obj_quat = args[3].value[1] # TODO: pass it to state_reach
 			print("!!!!!!!!!!!!args[3].value", args[3].value)
 			print("!!!!!!!!!!!!obj_pos", obj_pos)
 			target_pos = np.asarray(deepcopy(obj_pos))
@@ -387,6 +390,8 @@ class HookWorld():
 				self.ungrasp(robot_id, obj_id, obj_pos)
 			else:
 				raise NotImplementedError(name)
+			if name in ['hook',]:
+				simulate_for_sim_duration(3, 1./240)
 	
 	def step_task_plan(self, action, skills):
 		# TODO: implement the step_task_plan function for hook action
