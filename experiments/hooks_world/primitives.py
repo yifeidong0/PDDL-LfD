@@ -322,7 +322,11 @@ def get_hook_place_gen(target_objects_info, hook_info, verbose=1):
         if target_object_name == "scissors" and hook_name == "hook-slatwall":
             offset = [0, -0.25, 0.05] # offset scissors from hook-slatwall
         elif target_object_name == "tape" and hook_name == "hook-coat":
-            offset = [0, -0.06, 0.1] # offset tape from hook-coat
+            offset = [0, -0.06, 0.1]
+        elif target_object_name == "scissors" and hook_name == "hook-coat":
+            offset = [0.03, -0.12, 0.1]
+        elif target_object_name == "tape" and hook_name == "hook-slatwall":
+            offset = [0, -0.22, 0.1]
 
         # Set the pose for the target object
         point = Point(x=pose.value[0][0]+offset[0], y=pose.value[0][1]+offset[1], 

@@ -50,8 +50,8 @@ def pddlstream_from_problem(robots_info, tables_info, target_objects_info, hooks
 		# TODO: set the goal of TAMP problem here
 		# goal = ("and", *[("on-block", i, i + 1) for i in range(start_id, num_target_objects + 1)],
 		# 				("on-table", num_target_objects + 1, table_id),)
-		goal = ("and", ("on-hook", block_ids[0], hook_ids[0]), ("on-hook", block_ids[1], hook_ids[1]),)
-		# print("Template problem goal: ", goal)
+		# goal = ("and", ("on-hook", block_ids[0], hook_ids[0]), ("on-hook", block_ids[1], hook_ids[1]),)
+		goal = ("and", ("on-hook", block_ids[0], hook_ids[1]), ("on-hook", block_ids[1], hook_ids[0]),)
 
 	stream_map = {
 		"find-grasp": from_gen_fn(get_grasp_gen(robot_ids[0])),

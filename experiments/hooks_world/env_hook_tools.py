@@ -375,7 +375,6 @@ class HookWorld():
 			robot_id, obj_id = args[:2]
 			obj_pos = args[3].value[0]
 			obj_quat = args[3].value[1] # TODO: pass it to state_reach
-			print("!!!!!!!!!!!!args[3].value", args[3].value)
 			print("!!!!!!!!!!!!obj_pos", obj_pos)
 			target_pos = np.asarray(deepcopy(obj_pos))
 			target_pos[2] += GRASP_DIST
