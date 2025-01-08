@@ -18,7 +18,7 @@ from examples.pybullet.utils.pybullet_tools.utils import \
     set_pose, set_point, Pose, Point, disconnect, HideOutput,\
     set_joint_positions, get_movable_joints, get_link_pose, \
     wait_for_duration, get_point, connect, set_default_camera, \
-    load_model, draw_global_system, enable_gravity
+    load_model, draw_global_system, enable_gravity, simulate_for_sim_duration
 
 from experiments.poisson_disc_sampling import PoissonSampler, GridSampler
 from experiments.blocks_world_refine.primitives import Command, BodyPose, BodyConf, \
@@ -281,30 +281,32 @@ class PandaBlockWorld():
 		tool_link = get_tool_link(robot_id)
 		init_panda_pos, target_quat = self.get_eef_pose(robot_id)
 		panda_pos = deepcopy(init_panda_pos)
-		while np.linalg.norm(np.array(panda_pos) - np.array(target_pos)) > 0.01:
-			conf = p.calculateInverseKinematics(robot_id,
-													tool_link,
-													target_pos,
-													target_quat)
-			self.set_joint_positions(robot_id, conf)
-			wait_for_duration(0.02)
-			panda_pos = self.get_eef_pose(robot_id)[0]
+		# while np.linalg.norm(np.array(panda_pos) - np.array(target_pos)) > 0.01:
+		conf = p.calculateInverseKinematics(robot_id,
+												tool_link,
+												target_pos,
+												target_quat)
+		# 	self.set_joint_positions(robot_id, conf)
+		# 	wait_for_duration(.1)
+		# 	panda_pos = self.get_eef_pose(robot_id)[0]
 		
 		# close the gripper
 		grasp_conf = conf[:-2] + (0.03, 0.03)
 		self.set_joint_positions(robot_id, grasp_conf)
-		wait_for_duration(0.02)
+		# simulate_for_sim_duration(1, 1./240)
+		# wait_for_duration(0.02)
 		
-		while np.linalg.norm(np.array(panda_pos) - np.array(init_panda_pos)) > 0.01:
-			conf = p.calculateInverseKinematics(robot_id,
-													tool_link,
-													init_panda_pos,
-													target_quat)
-			self.set_joint_positions(robot_id, conf)
-			wait_for_duration(0.02)
-			panda_pos = self.get_eef_pose(robot_id)[0]
-			set_point(obj_id, panda_pos)
-			wait_for_duration(0.02)
+		# while np.linalg.norm(np.array(panda_pos) - np.array(init_panda_pos)) > 0.01:
+		# 	conf = p.calculateInverseKinematics(robot_id,
+		# 											tool_link,
+		# 											init_panda_pos,
+		# 											target_quat)
+		# 	self.set_joint_positions(robot_id, conf)
+		# 	simulate_for_sim_duration(1, 1./240)
+		# 	# wait_for_duration(1)
+		# 	panda_pos = self.get_eef_pose(robot_id)[0]
+		# 	# set_point(obj_id, panda_pos)
+		# 	# wait_for_duration(0.02)
 
 	def ungrasp(self, robot_id, obj_id, target_pos):
 		tool_link = get_tool_link(robot_id)
@@ -345,14 +347,19 @@ class PandaBlockWorld():
 			robot_id, obj_id = args[:2]
 			obj_pos = args[3].value[0]
 			target_pos = np.asarray(deepcopy(obj_pos))
-			target_pos[2] += GRASP_DIST
+			target_pregrasp_pos = np.asarray(deepcopy(target_pos))
+			target_pregrasp_pos[2] += GRASP_DIST
 			if name in ['pick', 'unstack']:
+				self.state_reach(robot_id, target_pregrasp_pos, 
+									tool=obj_id, attach=False)
 				self.state_reach(robot_id, target_pos, 
 									tool=obj_id, attach=False)
 				self.grasp(robot_id, obj_id, obj_pos)
+				self.state_reach(robot_id, target_pregrasp_pos, 
+									tool=obj_id, attach=1)
 			elif name in ['place', 'stack']:
-				self.state_reach(robot_id, target_pos, 
-									tool=obj_id, attach=True)
+				self.state_reach(robot_id, target_pregrasp_pos, 
+									tool=obj_id, attach=1)
 				self.ungrasp(robot_id, obj_id, obj_pos)
 			else:
 				raise NotImplementedError(name)
@@ -459,6 +466,7 @@ class PandaBlockWorld():
 												new_panda_pos,
 												target_quat)
 			self.set_joint_positions(robot_id, conf)
+			# simulate_for_sim_duration(0.03, 1./240)
 			panda_pos, _ = get_link_pose(robot_id, tool_link)
 			if attach:
 				if object is not None:

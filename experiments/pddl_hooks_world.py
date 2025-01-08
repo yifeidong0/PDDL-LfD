@@ -114,7 +114,7 @@ def solve_template_tamp_problem(robots_info, tables_info,
 
 	return plan
 
- 
+
 if __name__ == "__main__":
 	"""Generate the action plan for template problem"""
 	DEBUG = 1; VERBOSE = 1 # By default, not log info

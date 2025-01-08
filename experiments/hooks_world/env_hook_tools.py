@@ -25,7 +25,7 @@ from experiments.hooks_world.primitives import BodyPose, BodyConf, \
     get_tool_link
 from scipy.spatial.transform import Rotation as Rot
 
-
+DT = 0.05
 TABLE_HEIGHT = 0.001
 BLOCK_DIMS = np.array([0.06, 0.06, 0.06])
 BLOCK_HIGHTS = [0.031, 0.091, 0.151, 0.211, 0.271]
@@ -316,13 +316,13 @@ class HookWorld():
 													target_pos,
 													target_quat)
 			self.set_joint_positions(robot_id, conf)
-			wait_for_duration(0.02)
+			wait_for_duration(DT)
 			panda_pos = self.get_eef_pose(robot_id)[0]
 		
 		# close the gripper
 		grasp_conf = conf[:-2] + (0.03, 0.03)
 		self.set_joint_positions(robot_id, grasp_conf)
-		wait_for_duration(0.02)
+		wait_for_duration(DT)
 		
 		# Returns the EEF (with the object) to its initial position.
 		while np.linalg.norm(np.array(panda_pos) - np.array(init_panda_pos)) > 0.01:
@@ -331,10 +331,10 @@ class HookWorld():
 													init_panda_pos,
 													target_quat)
 			self.set_joint_positions(robot_id, conf)
-			wait_for_duration(0.02)
+			wait_for_duration(DT)
 			panda_pos = self.get_eef_pose(robot_id)[0]
 			set_point(obj_id, panda_pos)
-			wait_for_duration(0.02)
+			wait_for_duration(DT)
 
 	def ungrasp(self, robot_id, obj_id, target_pos):
 		tool_link = get_tool_link(robot_id)
@@ -344,10 +344,10 @@ class HookWorld():
 			conf = p.calculateInverseKinematics(robot_id,
 					tool_link, target_pos, target_quat)
 			self.set_joint_positions(robot_id, conf)
-			wait_for_duration(0.02)
+			wait_for_duration(DT)
 			panda_pos = self.get_eef_pose(robot_id)[0]
 			set_point(obj_id, panda_pos)
-			wait_for_duration(0.02)
+			wait_for_duration(DT)
 		
 		# open the gripper
 		grasp_conf = conf[:-2] + (0.06, 0.06)
@@ -355,7 +355,7 @@ class HookWorld():
 		# adjust object's position for better rendering
 		obj_pos = np.asarray(target_pos)
 		self.set_point(obj_id, obj_pos)
-		wait_for_duration(0.02)
+		wait_for_duration(DT)
 		
 		# return the initial pose
 		while np.linalg.norm(np.array(panda_pos) - np.array(init_panda_pos)) > 0.01:
@@ -364,7 +364,7 @@ class HookWorld():
 													init_panda_pos,
 													target_quat)
 			self.set_joint_positions(robot_id, conf)
-			wait_for_duration(0.02)
+			wait_for_duration(DT)
 			panda_pos = self.get_eef_pose(robot_id)[0]
 
 	def postprocess_plan(self, plan):
@@ -375,10 +375,8 @@ class HookWorld():
 			robot_id, obj_id = args[:2]
 			obj_pos = args[3].value[0]
 			obj_quat = args[3].value[1] # TODO: pass it to state_reach
-			print("!!!!!!!!!!!!obj_pos", obj_pos)
 			target_pos = np.asarray(deepcopy(obj_pos))
 			target_pos[2] += GRASP_DIST
-			print("!!!!!!!!!!!!target_pos", target_pos)
 			if name in ['pick', 'unstack']:
 				self.state_reach(robot_id, target_pos, 
 									tool=obj_id, attach=False)
@@ -464,7 +462,7 @@ class HookWorld():
 		tool_link = get_tool_link(robot_id)
 		Kp = 3 / 2
 		Kd = np.sqrt(2*Kp) / 2 
-		dt = 0.02
+		dt = DT
 		eef_pos_list = []
 		panda_pos, init_quat = get_link_pose(robot_id, tool_link)
 
@@ -534,10 +532,10 @@ class HookWorld():
 												target_point,
 												target_quat)
 			self.set_joint_positions(robot_id, conf)
-			wait_for_duration(0.02)
+			wait_for_duration(DT)
 			if attach:
 				set_point(obj, target_point)
-				# wait_for_duration(0.02)
+				# wait_for_duration(DT)
 	
 	def wait_for_duration(self, duration):
 		wait_for_duration(duration)

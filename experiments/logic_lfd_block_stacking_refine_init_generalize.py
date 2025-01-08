@@ -89,7 +89,7 @@ def generate_multi_goals(states, robot_id=0, table_id=1,
 	return goals
 
 def solve_template_tamp_problem(robots_info, tables_info, 
-                                blocks_info, goal=None):
+                                blocks_info, goal=None, skills=None):
 	"""
 	This function generate a plan for solving the template TAMP problem
 	"""
@@ -128,7 +128,8 @@ def solve_template_tamp_problem(robots_info, tables_info,
 	if USE_GUI:
 		# Visualization
 		env.reset(robots_info=robots_info, blocks_info=blocks_info)
-		env.postprocess_plan(plan)
+		# env.postprocess_plan(plan)
+		env.visualize_concatenated_plan(plan, skills)
 		time.sleep(1)
 	env.disconnect()
 
@@ -269,7 +270,7 @@ if __name__ == "__main__":
 		}
 
 	init_plan = solve_template_tamp_problem(robots_info, tables_info,
-											blocks_info, goal=None)
+											blocks_info, goal=None, skills=skills)
 
 	# """Solve the multi-goal problem"""
 	# info = {

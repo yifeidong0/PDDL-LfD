@@ -12,7 +12,10 @@ import matplotlib.pyplot as plt
 
 from copy import deepcopy
 from pathlib import Path
-from algorithms.motion_planner.dmp_custom.scripts.dmp_lqt_cp import DMP_LQT_CP
+import os.path as osp
+import sys
+sys.path.insert(0, osp.join(osp.dirname(osp.abspath(__file__)), '../scripts'))
+from dmp_lqt_cp import DMP_LQT_CP
 
 """Define task parameters"""
 param = lambda: None # Lazy way to define an empty class in python
